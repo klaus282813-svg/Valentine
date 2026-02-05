@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Will you be my Valentine?</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #ffa6c9 0%, #ff6b9d 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            background: white;
+            padding: 50px;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .bunnies {
+            width: 200px;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #ff1744;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        h1 .name {
+            color: #ff6b9d;
+            font-weight: 600;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        button {
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        #yesBtn {
+            background: #ff1744;
+            color: white;
+            padding: 20px 50px;
+            font-size: 1.5em;
+            animation: pulseLarge 1.5s ease-in-out infinite;
+            box-shadow: 0 0 20px rgba(255, 23, 68, 0.6);
+        }
+
+        #yesBtn:hover {
+            background: #d50000;
+            transform: scale(1.4);
+            animation: shineBright 0.8s ease-in-out infinite;
+        }
+
+        #yesBtn.grow-more {
+            transform: scale(1.5);
+            animation: shineBright 0.8s ease-in-out infinite;
+        }
+
+        /* Pulse animation for Yes button - always large */
+        @keyframes pulseLarge {
+            0%, 100% {
+                transform: scale(1.2);
+                box-shadow: 0 0 20px rgba(255, 23, 68, 0.6);
+            }
+            50% {
+                transform: scale(1.3);
+                box-shadow: 0 0 40px rgba(255, 23, 68, 0.8);
+            }
+        }
+
+        /* Bright shine animation */
+        @keyframes shineBright {
+            0%, 100% {
+                box-shadow: 0 0 40px rgba(255, 23, 68, 0.9);
+            }
+            50% {
+                box-shadow: 0 0 60px rgba(255, 23, 68, 1), 0 0 100px rgba(255, 23, 68, 0.7);
+            }
+        }
+
+        #noBtn {
+            background: #f5f5f5;
+            color: #666;
+            position: relative;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            transition: all 0.2s ease;
+        }
+
+        #noBtn:hover {
+            background: #e0e0e0;
+        }
+
+        .message {
+            margin-top: 20px;
+            font-size: 1.1em;
+            color: #ff6b9d;
+            font-style: italic;
+        }
+
+        .celebration {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .celebration.active {
+            display: flex;
+        }
+
+        .celebration h2 {
+            font-size: 4em;
+            color: #ff1744;
+            margin-bottom: 30px;
+            animation: bounce 1s infinite;
+        }
+
+        .celebration img {
+            width: 400px;
+            border-radius: 20px;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .hearts {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 1001;
+        }
+
+        .heart {
+            position: absolute;
+            font-size: 30px;
+            animation: fall 4s linear infinite;
+            opacity: 0;
+            color: #ff1744;
+            text-shadow: 0 0 10px rgba(255, 23, 68, 0.8),
+                         0 0 20px rgba(255, 23, 68, 0.6),
+                         0 0 30px rgba(255, 23, 68, 0.4);
+            filter: drop-shadow(0 0 5px rgba(255, 23, 68, 0.9));
+        }
+
+        @keyframes fall {
+            0% {
+                top: -10%;
+                opacity: 1;
+            }
+            100% {
+                top: 100%;
+                opacity: 0;
+            }
+        }
+
+        /* Music control - simple mute icon */
+        .music-control {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1002;
+            transition: all 0.3s ease;
+        }
+
+        .music-control:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .music-control:active {
+            transform: scale(0.95);
+        }
+
+        .music-icon {
+            font-size: 1.5em;
+        }
+
+        /* Start overlay to enable audio */
+        .start-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ffa6c9 0%, #ff6b9d 100%);
+            z-index: 2000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .start-overlay.hidden {
+            display: none;
+        }
+
+        .start-button {
+            background: white;
+            color: #ff1744;
+            border: none;
+            padding: 25px 60px;
+            font-size: 1.8em;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .start-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .start-overlay h2 {
+            color: white;
+            font-size: 2em;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <!-- Start overlay to enable audio -->
+    <div class="start-overlay" id="startOverlay">
+        <h2>💕 Valentine's Surprise 💕</h2>
+        <button class="start-button" id="startButton">Click to Start 🎵</button>
+    </div>
+
+    <div class="container">
+        <img src="bunnies.svg" alt="Bunnies" class="bunnies">
+        
+        <h1><span class="name" id="personName">Palak</span>, Will you be my Valentine?</h1>
+        
+        <div class="buttons">
+            <button id="yesBtn">Yes</button>
+            <button id="noBtn">No</button>
+        </div>
+        
+        <p class="message">Even 'No' is whispering 'Yes'…🥰</p>
+    </div>
+
+    <div class="celebration" id="celebration">
+        <h2>YAY! 🎉</h2>
+        <img src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExOGRpYTBhYTNlZThiNmo3cTgyczcwc3hxMGZ3OWJqNzE0Y2x5YTg4eSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/7iZQzo9r0LcFnP0nnm/giphy.gif" 
+             alt="Celebration">
+    </div>
+
+    <div class="hearts" id="hearts"></div>
+
+    <!-- Audio elements -->
+    <!-- Homepage background music (plays before clicking Yes) -->
+    <audio id="homepageMusic" loop>
+        <source src="https://raw.githubusercontent.com/klaus282813-svg/Valentine/main/Everything%20is%20romantic%20Part1.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Celebration music (plays after clicking Yes) -->
+    <audio id="celebrationMusic" loop>
+        <source src="https://raw.githubusercontent.com/klaus282813-svg/Valentine/main/Everything%20is%20romantic%20Part2.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Simple mute icon control -->
+    <div class="music-control" id="musicControl" title="Mute/Unmute">
+        <span class="music-icon" id="musicIcon">🔊</span>
+    </div>
+
+    <script>
+        // Get name from URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const name = urlParams.get('name');
+        if (name) {
+            document.getElementById('personName').textContent = name;
+        }
+
+        const yesBtn = document.getElementById('yesBtn');
+        const noBtn = document.getElementById('noBtn');
+        const celebration = document.getElementById('celebration');
+        const hearts = document.getElementById('hearts');
+        const homepageMusic = document.getElementById('homepageMusic');
+        const celebrationMusic = document.getElementById('celebrationMusic');
+        const musicControl = document.getElementById('musicControl');
+        const musicIcon = document.getElementById('musicIcon');
+        const startOverlay = document.getElementById('startOverlay');
+        const startButton = document.getElementById('startButton');
+
+        let isMuted = false;
+
+        // Start button - enables audio and starts homepage music
+        startButton.addEventListener('click', function() {
+            // Set volume
+            homepageMusic.volume = 0.7;
+            celebrationMusic.volume = 0.7;
+            
+            // Start playing homepage music
+            homepageMusic.play().catch(error => {
+                console.log('Audio play failed:', error);
+            });
+            
+            // Hide start overlay
+            startOverlay.classList.add('hidden');
+        });
+
+        // No button text variations
+        const noButtonTexts = [
+            'No',
+            'hehe',
+            '..?',
+            'Are you sure?',
+            'Really?',
+            'Think again!',
+            'Nope',
+            'Maybe..?',
+            'Try again',
+            'Click Yes!'
+        ];
+        let noButtonHoverCount = 0;
+        let noButtonSize = 1; // Starting size multiplier
+
+        // Yes button click
+        yesBtn.addEventListener('click', function() {
+            celebration.classList.add('active');
+            createHearts();
+            
+            // Stop homepage music and play celebration music
+            homepageMusic.pause();
+            homepageMusic.currentTime = 0;
+            
+            // Play celebration music (respecting mute state)
+            celebrationMusic.muted = isMuted;
+            celebrationMusic.play().catch(error => {
+                console.log('Celebration music play was prevented:', error);
+            });
+        });
+
+        // No button - make it move away, change text, and shrink. Also make Yes button grow!
+        noBtn.addEventListener('mouseover', function() {
+            const container = document.querySelector('.container');
+            const containerRect = container.getBoundingClientRect();
+            
+            // Move the button
+            const randomX = Math.random() * (containerRect.width - 150) - 75;
+            const randomY = Math.random() * 100 - 50;
+            
+            noBtn.style.position = 'absolute';
+            noBtn.style.transform = `translate(${randomX}px, ${randomY}px)`;
+            
+            // Shrink the No button
+            noButtonSize = Math.max(0.3, noButtonSize - 0.1); // Minimum size 0.3
+            noBtn.style.fontSize = (1.2 * noButtonSize) + 'em';
+            noBtn.style.padding = (15 * noButtonSize) + 'px ' + (40 * noButtonSize) + 'px';
+            
+            // Make Yes button grow larger
+            yesBtn.classList.add('grow-more');
+            
+            // Change text randomly
+            noButtonHoverCount++;
+            if (noButtonHoverCount > 1) { // Start changing text after first hover
+                const randomIndex = Math.floor(Math.random() * noButtonTexts.length);
+                noBtn.textContent = noButtonTexts[randomIndex];
+            }
+        });
+
+        // Reset No button text and Yes button size when mouse leaves No button
+        noBtn.addEventListener('mouseout', function() {
+            // Remove the extra grow class from Yes button
+            yesBtn.classList.remove('grow-more');
+            
+            setTimeout(() => {
+                noBtn.textContent = 'No';
+            }, 2000);
+        });
+
+        // Mute/Unmute icon click
+        musicControl.addEventListener('click', function() {
+            isMuted = !isMuted;
+            homepageMusic.muted = isMuted;
+            celebrationMusic.muted = isMuted;
+            musicIcon.textContent = isMuted ? '🔇' : '🔊';
+        });
+
+        // Create falling hearts animation
+        function createHearts() {
+            const heartSymbols = ['❤️', '💕', '💖', '💗', '💓', '💝'];
+            
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.textContent = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                hearts.appendChild(heart);
+                
+                setTimeout(() => {
+                    heart.remove();
+                }, 6000);
+            }, 300);
+        }
+    </script>
+</body>
+</html>
